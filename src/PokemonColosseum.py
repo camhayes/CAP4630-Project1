@@ -13,15 +13,14 @@ def main () :
     moves_data = '../data/moves-data.csv'
     pokemon_list = loadPokemon(pokemon_data)
     moves_list = loadMoves(moves_data)
-    # print("Welcome to Pokemon Colosseum!")
-    print(" _______ _______ ___   _ _______ __   __ _______ __    _   _______ _______ ___     _______ _______ _______ _______ __   __ __   __ ")
-    print("|       |       |   | | |       |  |_|  |       |  |  | | |       |       |   |   |       |       |       |       |  | |  |  |_|  |")
-    print("|    _  |   _   |   |_| |    ___|       |   _   |   |_| | |       |   _   |   |   |   _   |  _____|  _____|    ___|  | |  |       |")
-    print("|   |_| |  | |  |      _|   |___|       |  | |  |       | |       |  | |  |   |   |  | |  | |_____| |_____|   |___|  |_|  |       |")
-    print("|    ___|  |_|  |     |_|    ___|       |  |_|  |  _    | |      _|  |_|  |   |___|  |_|  |_____  |_____  |    ___|       |       |")
-    print("|   |   |       |    _  |   |___| ||_|| |       | | |   | |     |_|       |       |       |_____| |_____| |   |___|       | ||_|| |")
-    print("|___|   |_______|___| |_|_______|_|   |_|_______|_|  |__| |_______|_______|_______|_______|_______|_______|_______|_______|_|   |_|")
-    name = input("Enter Player Name: ")
+    print("\n")
+    print("█▀█ █▀█ █▄▀ █▀▀ █▀▄▀█ █▀█ █▄░█   █▀▀ █▀█ █░░ █▀█ █▀ █▀ █▀▀ █░█ █▀▄▀█")
+    print("█▀▀ █▄█ █░█ ██▄ █░▀░█ █▄█ █░▀█   █▄▄ █▄█ █▄▄ █▄█ ▄█ ▄█ ██▄ █▄█ █░▀░█")
+    print("\n")
+    print("> Hello, and welcome to the Pokemon Colosseum! My name is Professor Cam, and you must be... erm.. what was your name again?")
+    name = input(">> Enter Player Name: ")
+    print("> Ah, right! Of course, you're " + name + "!")
+    print("> In just a moment, you'll enter the colosseum with a team of three Pokemon to battle against a strong foe. A coin toss will determine who starts first.")
     player = constructPlayer(name, pokemon_list)
     badGuy = constructPlayer("Rocket", pokemon_list)
     matchStart(player, badGuy, moves_list)
@@ -67,17 +66,17 @@ def matchStart (playerA, playerB, moves_list) :
     healthy_fighters = True
     cointoss = random.randint(0,1)
     turn = 0
-    print("====> Team Rocket enters with " + playerB.pokemon[0].name + ", " + playerB.pokemon[1].name + " and " + playerB.pokemon[2].name + " <====")
-    print("====> Team", playerA.name, "enters with " + playerA.pokemon[0].name + ", " + playerA.pokemon[1].name + " and " + playerA.pokemon[2].name + " <====")
-    print("A coin toss will determine who starts first.")
+    
     if cointoss == 0:
-        print("The coin lands on heads! Team", playerA.name, "will start first!")
+        print("The coin lands on heads, so Team", playerA.name, "will start first!")
         turn = 0
     else: 
-        print("The coin lands on tails! Team", playerB.name, "will start first!")
+        print("The coin lands on tails, so Team", playerB.name, "will start first!")
         turn = 1
-    print("----------------")
-    print("Let the battle begin!")
+    print("\n▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Let the battle begin! ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n")
+    print("====> Team Rocket enters with " + playerB.pokemon[0].name + ", " + playerB.pokemon[1].name + " and " + playerB.pokemon[2].name + " <====")
+    print("====> Team", playerA.name, "enters with " + playerA.pokemon[0].name + ", " + playerA.pokemon[1].name + " and " + playerA.pokemon[2].name + " <====")
+    print("\n")
     while(healthy_fighters):
         # each loop starts a new turn
         # i need to know what pokemon are on the field at the given time
@@ -89,7 +88,7 @@ def matchStart (playerA, playerB, moves_list) :
 
 def doTurn(turn, playerA, playerB, playerAPokemon, playerBPokemon, moves_list):
     if turn == 0:
-        move_choice = doPlayerTurn(playerAPokemon)
+        move_choice = doPlayerTurn(playerAPokemon, playerBPokemon)
         doCombat(move_choice, playerA, playerB, playerAPokemon, playerBPokemon, moves_list)
         return 1
     else:
@@ -97,26 +96,28 @@ def doTurn(turn, playerA, playerB, playerAPokemon, playerBPokemon, moves_list):
         doCombat(move_choice, playerB, playerA, playerBPokemon, playerAPokemon, moves_list)
         return 0
 
-def doPlayerTurn (current_pokemon) :
+def doPlayerTurn (current_pokemon, opponent_pokemon) :
     i = 1
     print("==================================")
-    print("Choose a move for " + current_pokemon.name)
+    print("Choose a move for " + current_pokemon.name + " to use against " + opponent_pokemon.name + " (" + str(opponent_pokemon.hp) + "hp)")
     print("==================================")
     for moves in current_pokemon.move_queue:
-        print("| " + str(i) + ". " + current_pokemon.move_queue[i-1] )
+        print("║ " + str(i) + ". " + current_pokemon.move_queue[i-1] )
         i += 1
     print("==================================")
     while True:
         try:
-            move_choice = int(input("Choose a move: "))
-            if move_choice in {1, 2, 3, 4, 5}:  
+            move_choice = input("Choose a move: ")
+            if "run" in move_choice.lower():
+                print("You can't run from a Pokemon battle!")
+            elif int(move_choice) in {1, 2, 3, 4, 5}:  
                 break 
             else:
                 print("Invalid input. Please try again.") 
         except ValueError:
             print("Invalid input. Please enter a number.") 
-    
-    return move_choice
+    print("\n")
+    return int(move_choice)
 
 def doCombat (move_choice, attacker, defender, attackerPokemon, defenderPokemon, moves_list) :
     print(">>> " + attackerPokemon.name + " uses " + attackerPokemon.move_queue[move_choice - 1] + " on " + defenderPokemon.name + ":")
@@ -130,7 +131,7 @@ def doCombat (move_choice, attacker, defender, attackerPokemon, defenderPokemon,
         print("Team " + defender.name + "'s " + defender.pokemon[0].name + " enters the battle!")
     else :
         print(defenderPokemon.name + " now has", defenderPokemon.hp, "hp points")
-    print("~~~~~~")
+    print("\n")
 
 def doDamage (move_choice, attackerPokemon, defenderPokemon, moves_list) :
     move = attackerPokemon.move_queue[move_choice - 1]
@@ -196,11 +197,11 @@ def checkMoveQueue(pokemon) :
 
 def checkGameState (playerA, playerB):
     if len(playerA.pokemon) == 0:
-        print("Team " + playerA.name + " has no more useable Pokemon. Team " + playerB.name + " wins!")
+        print("> Team " + playerA.name + " has no more useable Pokemon. Team " + playerB.name + " wins!")
         sys.exit(0)
         return False
     if len(playerB.pokemon) == 0:
-        print("Team " + playerB.name + " has no more useable Pokemon. Team " + playerA.name + " wins!")
+        print("> Team " + playerB.name + " has no more useable Pokemon. Team " + playerA.name + " wins!")
         sys.exit(0)
         return False
     return True
